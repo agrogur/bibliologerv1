@@ -1,6 +1,3 @@
-
-README.md
-
 Book Tracking Application
 This is a simple Flask application for tracking books. Users can add books, update their reading progress, and delete books from their reading list.
 
