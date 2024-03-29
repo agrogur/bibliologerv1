@@ -6,10 +6,6 @@ Add Book: Users can add books to their reading list by providing the book title,
 Update Progress: Users can update their reading progress for a particular book by specifying the number of pages they've read.
 Delete Book: Users can remove books from their reading list.
 
-Dependencies
-Python 3.x
-Flask
-
 
 
 
