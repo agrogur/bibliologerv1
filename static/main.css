@@ -1,0 +1,5 @@
+.brand-beta {
+    font-size: 12px; /* Set the font size for the "BETA" tag */
+    margin-left: 5px; /* Add some spacing to the left of the "BETA" tag */
+    vertical-align: top; /* Align the text to the top */
+}

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <title>Bibliologer - scrobbler for books</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+  <header class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo-img">
+        <span class="brand-text">Bibliologer</span>
+        <span class="brand-beta">BETA</span>
+    </a>
+
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+      <button class="btn btn-sm btn-light me-md-2" type="button">My Reading</button>
+      <button class="btn btn-sm btn-light" type="button">Me</button>
+     <form method="post" action="/logout">
+     <button type="submit" class="btn btn-danger">Logout</button></form>
+    </div>
+    
+</header>
+
+    
+    <main>
+      <div class="d-flex align-items-center">
+        <div class="flex-shrink-0">
+           <img src="{{ url_for('static', filename='profile.png') }}" alt="Profile Photo">
+        </div>
+        <div class="flex-grow-1 ms-3">
+         Welcome back, [User's Name]! 
+         Your Rank: [User's Rank]
+        </div>
+      </div>
+
+<div class="card text-center">
+  <div class="card-header">
+    <ul class="nav nav-tabs card-header-tabs">
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="true" href="#"><i class="bi bi-book"></i> My Reading</a>
+      </li>
+    </ul>
+  </div>
+  <div class="card-body">
+              <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+              <div class="d-flex align-items-start">
+                <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                  <a class="nav-link active" id="v-pills-inprogress-tab" data-bs-toggle="pill" data-bs-target="#v-pills-inprogress" role="tab" aria-controls="v-pills-inprogress" aria-selected="true"><i class="bi bi-book-half"></i> In Progress</a>
+                  <a class="nav-link" id="v-pills-saved-tab" data-bs-toggle="pill" data-bs-target="#v-pills-saved" role="tab" aria-controls="v-pills-saved" aria-selected="false"><i class="bi bi-save"></i> Saved</a>
+                  <a class="nav-link" id="v-pills-mycollections-tab" data-bs-toggle="pill" data-bs-target="#v-pills-mycollections" role="tab" aria-controls="v-pills-mycollections" aria-selected="false"><i class="bi bi-collection"></i> My Collections</a>
+                  <a class="nav-link" id="v-pills-read-tab" data-bs-toggle="pill" data-bs-target="#v-pills-read" role="tab" aria-controls="v-pills-read" aria-selected="false"><i class="bi bi-book-fill"></i> Read</a>
+                </div>
+        
+                <div class="tab-content" id="v-pills-tabContent">
+                  <div class="tab-pane fade show active" id="v-pills-inprogress" role="tabpanel" aria-labelledby="v-pills-inprogress-tab">
+                    <form method="POST" action="/add_book">
+                    
+                    
+                    
+                      <div class="mb-3">
+                        <div class="alert alert-secondary text-center">
+                          <label for="isbn" class="form-label">Scrobble Books by <i class="bi bi-wifi"></i>
+                            Manually</label>            
+                                  </div>
+                        <input type="text" class="form-control" name="isbn" placeholder="Enter a 10 or 13-digit ISBN value" required>
+                      </div>
+                      <button type="submit" class="btn btn-primary btn-sm">Add Book</button>
+                    </form>
+                  <!-- Add a "Status" column to the table -->
+<table class="table table-bordered table-striped table-responsive">
+  <thead>
+      <tr> 
+          <th>Book Title</th>
+          <th>Author(s)</th>
+          <th>Total Pages</th>
+          <th>Progress (%)</th>
+          <th>Status</th> <!-- Add the "Status" column -->
+          <th>Update Progress</th>
+          <th>Delete Book</th>
+      </tr>
+  </thead>
+  <tbody>
+      {% for index in range(reading_history|length) %}
+      <tr>
+          <td>{{ reading_history[index]['title'] }}</td>
+          <td>{{ reading_history[index]['author'] }}</td>
+          <td>{{ reading_history[index]['num_pages'] }}</td>
+          <td>{{ reading_history[index]['progress'] }}</td>
+          <!-- Add the "Status" column cell -->
+          <td>
+            {% if reading_history[index]['progress'] == 100 %}
+                Finished {{ current_date.strftime("%m/%d/%Y") }}
+            {% else %}
+                Reading
+            {% endif %}
+        </td>
+          <td>
+              <form method="POST" action="/update_progress/{{ index }}">
+                  <input type="number" class="form-control" name="pages_read" min="0" max="{{ reading_history[index]['num_pages'] }}" required>
+                  <button type="submit" class="btn btn-primary btn-sm">Update</button>
+              </form>
+          </td>
+          <td>
+              <form method="POST" action="/delete_book/{{ index }}">
+                  <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+              </form>
+          </td>
+      </tr>
+      {% endfor %}
+  </tbody>
+</table>
+
+                    <div class="container mt-5">
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <div class="alert alert-secondary text-center">
+                                    Scrobble Books from <i class="bi bi-amazon"></i> Kindle Cloud Reader
+                                </div>
+                                <form method="POST" action="/scrobble_kindle_cloud_reader">
+                                    <div class="mb-3">
+                                        <input type="text" class="form-control" name="client_id" placeholder="Client ID" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="text" class="form-control" name="client_secret" placeholder="Client Secret" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Authorize Kindle Cloud Reader</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="v-pills-saved" role="tabpanel" aria-labelledby="v-pills-saved-tab" tabindex="0"><button class="btn btn-primary" type="button" disabled>
+                  <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                  <span class="visually-hidden" role="status">Loading...</span></div>
+                <div class="tab-pane fade" id="v-pills-mycollections" role="tabpanel" aria-labelledby="v-pills-mycollections-tab" tabindex="0"><button class="btn btn-primary" type="button" disabled>
+                  <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                  <span class="visually-hidden" role="status">Loading...</span></div>
+                <div class="tab-pane fade" id="v-pills-read" role="tabpanel" aria-labelledby="v-pills-read-tab" tabindex="0">  
+                  <button class="btn btn-primary" type="button" disabled>
+                    <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                    <span class="visually-hidden" role="status">Loading...</span>
+                  </button>
+                  </div>
+              </div>
+            </div>
+          </div>
+            
+
+  </div>
+</div>
+    </main>
+    <script>
+        const triggerTabList = document.querySelectorAll('#myTab button')
+    triggerTabList.forEach(triggerEl => {
+      const tabTrigger = new bootstrap.Tab(triggerEl)
+    
+      triggerEl.addEventListener('click', event => {
+        event preventDefault()
+        tabTrigger.show()
+      })
+    }) 
+    </script>    
+    <script>
+      function showLogin() {
+          document.getElementById("login-form").style.display = "block";
+          document.getElementById("signup-form").style.display = "none";
+          document.getElementById("reset-password-form").style.display = "none";
+      }
+
+      function showSignup() {
+          document.getElementById("login-form").style.display = "none";
+          document.getElementById("signup-form").style.display = "block";
+          document.getElementById("reset-password-form").style.display = "none";
+      }
+
+      function showResetPassword() {
+          document.getElementById("login-form").style.display = "none";
+          document.getElementById("signup-form").style.display = "none";
+          document.getElementById("reset-password-form").style.display = "block";
+      }
+
+      showLogin();  // Show the login form by default
+  </script>
+</body>
+</html>
+
+
